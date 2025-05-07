@@ -1,7 +1,5 @@
-using System;
-using System.Data;
-using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace SellerPlatform
 {
@@ -13,11 +11,11 @@ namespace SellerPlatform
         {
             InitializeComponent();
 
-            
-            string server = "localhost"; 
+
+            string server = "localhost";
             string database = "makeupstorenew";
             string user = "root";
-            string password = ""; 
+            string password = "";
             string port = "3306";
 
             connectionString = $"server={server};port={port};user id={user};password={password};database={database};SslMode=none";
@@ -32,17 +30,17 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "SELECT p.ID, p.Name, p.Price, p.Image_Link, p.Description, b.Brand AS Brand, c.Category AS Category " +
+                    string query = "SELECT p.id, p.name, p.price, p.image_link, p.description, p.howtouse, p.ingredients, b.name AS brand, c.name AS category " +
                                    "FROM products p " +
-                                   "JOIN brands b ON p.Brand_Id = b.ID " +
-                                   "JOIN categories c ON p.Category_Id = c.ID";
+                                   "JOIN brands b ON p.brand_id = b.id " +
+                                   "JOIN categories c ON p.category_Id = c.id";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
                     {
                         DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
-                        dataGridView1.DataSource = dataTable; 
+                        dataGridView1.DataSource = dataTable;
                     }
                 }
                 catch (MySqlException ex)
@@ -59,7 +57,7 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "SELECT id FROM brands WHERE brand = @brandName";
+                    string query = "SELECT id FROM brands WHERE name = @brandName";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -73,19 +71,19 @@ namespace SellerPlatform
                         else
                         {
                             MessageBox.Show($"Brand '{brandName}' not found.");
-                            return -1; 
+                            return -1;
                         }
                     }
                 }
                 catch (MySqlException ex)
                 {
                     MessageBox.Show($"Error: {ex.Message}");
-                    return -1; 
+                    return -1;
                 }
             }
         }
 
-        
+
         private int GetCategoryId(string categoryName)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -93,7 +91,7 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "SELECT id FROM categories WHERE category = @categoryName";
+                    string query = "SELECT id FROM categories WHERE name = @categoryName";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -107,21 +105,21 @@ namespace SellerPlatform
                         else
                         {
                             MessageBox.Show($"Category '{categoryName}' not found.");
-                            return -1; 
+                            return -1;
                         }
                     }
                 }
                 catch (MySqlException ex)
                 {
                     MessageBox.Show($"Error: {ex.Message}");
-                    return -1; 
+                    return -1;
                 }
             }
         }
 
 
         // Method to add a product to the database
-        private void AddProduct(string name, decimal price, string imageLink, string description, string brandName, string categoryName)
+        private void AddProduct(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string howToUsw, string ingredients)
         {
             int brandId = GetBrandId(brandName);
             int categoryId = GetCategoryId(categoryName);
@@ -138,8 +136,8 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "INSERT INTO products (name, Price, Image_Link, Description, Brand_Id, Category_Id) " +
-                                   "VALUES (@name, @price, @imageLink, @description, @brandId, @categoryId)";
+                    string query = "INSERT INTO products (name, price, image_link, description, brand_Id, category_Id, howtouse, ingredients) " +
+                                   "VALUES (@name, @price, @imageLink, @description, @brandId, @categoryId, @howtouse, @ingredients)";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -149,6 +147,8 @@ namespace SellerPlatform
                         command.Parameters.AddWithValue("@description", description);
                         command.Parameters.AddWithValue("@brandId", brandId);
                         command.Parameters.AddWithValue("@categoryId", categoryId);
+                        command.Parameters.AddWithValue("@howtouse", howToUsw);
+                        command.Parameters.AddWithValue("@ingredients", ingredients);
 
                         int rowsAffected = command.ExecuteNonQuery();
                         MessageBox.Show(rowsAffected > 0 ? "Product added successfully!" : "Failed to add product.");
@@ -160,17 +160,17 @@ namespace SellerPlatform
                 }
             }
 
-            // Reload the products into the DataGridView
+
             LoadProducts();
         }
 
-        // Method to update a product by Name
-        private void UpdateProductByName(string name, decimal price, string imageLink, string description, string brandName, string categoryName)
+
+        private void UpdateProductByName(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string howtouse, string ingredients)
         {
             int brandId = GetBrandId(brandName);
             int categoryId = GetCategoryId(categoryName);
 
-            // Ensure both IDs are valid before proceeding
+
             if (brandId == -1 || categoryId == -1)
             {
                 MessageBox.Show("Failed to retrieve Brand ID or Category ID. Product not updated.");
@@ -182,8 +182,7 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "UPDATE products SET Price=@price, Image_Link=@imageLink, Description=@description, " +
-                                   "Brand_Id=@brandId, Category_Id=@categoryId WHERE Name=@name";
+                    string query = "UPDATE products SET price=@price, image_link=@imageLink, description=@description,brand_id=@brandId, category_id=@categoryId howtouse=@howtouse, ingredients=@ingredients, WHERE name=@name";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -191,6 +190,8 @@ namespace SellerPlatform
                         command.Parameters.AddWithValue("@price", price);
                         command.Parameters.AddWithValue("@imageLink", imageLink);
                         command.Parameters.AddWithValue("@description", description);
+                        command.Parameters.AddWithValue("@ingredients", ingredients);
+                        command.Parameters.AddWithValue("@howtouse", howtouse);
                         command.Parameters.AddWithValue("@brandId", brandId);
                         command.Parameters.AddWithValue("@categoryId", categoryId);
 
@@ -232,11 +233,11 @@ namespace SellerPlatform
                 }
             }
 
-            
+
             LoadProducts();
         }
 
-        
+
         private void btn_add_Click(object sender, EventArgs e)
         {
             string name = txtName.Text;
@@ -244,20 +245,24 @@ namespace SellerPlatform
             string imageLink = txtImage.Text;
             string description = txtDescription.Text;
             string brandName = cbBrand.Text;
+            string howToUse = cbHowToUse.Text;
+            string ingredients = cbIngredients.Text;
             string categoryName = cbCategory.Text;
 
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(imageLink) ||
                 string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(brandName) ||
-                string.IsNullOrWhiteSpace(categoryName))
+                string.IsNullOrWhiteSpace(categoryName) ||
+                string.IsNullOrWhiteSpace(howToUse) ||
+                string.IsNullOrWhiteSpace(ingredients))
             {
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
 
-            AddProduct(name, price, imageLink, description, brandName, categoryName);
+            AddProduct(name, price, imageLink, description, brandName, categoryName, howToUse, ingredients);
         }
 
-        
+
         private void btn_change_Click(object sender, EventArgs e)
         {
             string name = txtName.Text;
@@ -265,20 +270,24 @@ namespace SellerPlatform
             string imageLink = txtImage.Text;
             string description = txtDescription.Text;
             string brandName = cbBrand.Text;
+            string howtouse = cbHowToUse.Text;
+            string ingredients = cbIngredients.Text;
             string categoryName = cbCategory.Text;
 
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(imageLink) ||
                 string.IsNullOrWhiteSpace(description) || string.IsNullOrWhiteSpace(brandName) ||
+                string.IsNullOrWhiteSpace(howtouse) ||
+                string.IsNullOrWhiteSpace(ingredients) ||
                 string.IsNullOrWhiteSpace(categoryName))
             {
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
 
-            UpdateProductByName(name, price, imageLink, description, brandName, categoryName);
+            UpdateProductByName(name, price, imageLink, description, brandName, howtouse, ingredients, categoryName);
         }
 
-        
+
         private void btn_delete_Click(object sender, EventArgs e)
         {
             string name = txtName.Text;
@@ -290,6 +299,23 @@ namespace SellerPlatform
             }
 
             DeleteProductByName(name);
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+
+                txtName.Text = row.Cells["name"].Value?.ToString();
+                nudPrice.Text = row.Cells["price"].Value?.ToString();
+                txtImage.Text = row.Cells["image_link"].Value?.ToString();
+                txtDescription.Text = row.Cells["description"].Value?.ToString();
+                cbBrand.Text = row.Cells["brand"].Value?.ToString();
+                cbCategory.Text = row.Cells["category"].Value?.ToString();
+                cbHowToUse.Text = row.Cells["howtouse"].Value?.ToString();
+                cbIngredients.Text = row.Cells["ingredients"].Value?.ToString();
+            }
         }
     }
 }

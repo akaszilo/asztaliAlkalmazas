@@ -2,6 +2,8 @@
 using System.Data;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto.Generators;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SellerPlatform
 {
@@ -13,11 +15,11 @@ namespace SellerPlatform
         {
             InitializeComponent();
 
-            
-            string server = "localhost"; 
+
+            string server = "localhost";
             string database = "makeupstorenew";
             string user = "root";
-            string password = ""; 
+            string password = "";
             string port = "3306";
 
             connectionString = $"server={server};port={port};user id={user};password={password};database={database};SslMode=none";
@@ -37,8 +39,8 @@ namespace SellerPlatform
             if (ValidateLogin(username, password))
             {
                 MessageBox.Show("Login successful!");
-                this.Hide(); 
-                Form1 mainForm = new Form1(); 
+                this.Hide();
+                Form1 mainForm = new Form1();
                 mainForm.ShowDialog();
                 this.Close();
             }
@@ -55,17 +57,30 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "SELECT COUNT(*) FROM users WHERE name = @username AND password = @password";
+                    string query = "SELECT password FROM users WHERE name = @username";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@username", username);
-                        command.Parameters.AddWithValue("@password", password);
+                        //command.Parameters.AddWithValue("@password", password);
 
                         object result = command.ExecuteScalar();
-                        if (result != null && int.TryParse(result.ToString(), out int count))
+                        if (result != null)
                         {
-                            return count > 0; 
+
+
+                            string storedHash = result.ToString();
+
+
+                            if (BCrypt.Net.BCrypt.Verify(password, storedHash))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                // Hibás jelszó
+                                return false;
+                            }
                         }
                     }
                 }
