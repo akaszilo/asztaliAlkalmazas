@@ -171,12 +171,12 @@ namespace SellerPlatform
             int categoryId = GetCategoryId(categoryName);
 
 
-           if (brandId == -1 || categoryId == -1)
+            if (brandId == -1 || categoryId == -1)
             {
                 MessageBox.Show("Failed to retrieve Brand ID or Category ID. Product not updated.");
                 return;
             }
-           Console.WriteLine("valami");
+            Console.WriteLine("valami");
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 try
@@ -192,23 +192,21 @@ namespace SellerPlatform
                         command.Parameters.AddWithValue("@description", description);
                         command.Parameters.AddWithValue("@brandId", brandId);
                         command.Parameters.AddWithValue("@categoryId", categoryId);
-                        Console.WriteLine("valami");
                         command.Parameters.AddWithValue("@ingredients", ingredients);
                         command.Parameters.AddWithValue("@howtouse", howtouse);
 
                         int rowsAffected = command.ExecuteNonQuery();
-                        Console.WriteLine("valami");
                         MessageBox.Show(rowsAffected > 0 ? "Product updated successfully!" : "No product found with the specified name.");
                     }
                 }
                 catch (MySqlException ex)
                 {
-                    
-                        
-                        
-                            MessageBox.Show($"MySQL error {ex.Number}: {ex.Message}");
-                           
-                    
+
+
+
+                    MessageBox.Show($"MySQL error {ex.Number}: {ex.Message}");
+
+
                 }
             }
 
@@ -324,6 +322,12 @@ namespace SellerPlatform
                 cbHowToUse.Text = row.Cells["howtouse"].Value?.ToString();
                 cbIngredients.Text = row.Cells["ingredients"].Value?.ToString();
             }
+        }
+
+        private void orders_Click(object sender, EventArgs e)
+        {
+            OrderForm order = new OrderForm();
+            order.ShowDialog();
         }
     }
 }

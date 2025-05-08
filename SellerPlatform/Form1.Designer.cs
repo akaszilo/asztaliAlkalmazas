@@ -1,4 +1,4 @@
-﻿namespace SellerPlatform
+namespace SellerPlatform
 {
     partial class Form1
     {
@@ -30,7 +30,7 @@
         {
             label1 = new Label();
             btn_add = new Button();
-            button2 = new Button();
+            orders = new Button();
             btn_change = new Button();
             button4 = new Button();
             btn_delete = new Button();
@@ -75,15 +75,16 @@
             btn_add.UseVisualStyleBackColor = true;
             btn_add.Click += btn_add_Click;
             // 
-            // button2
+            // orders
             // 
-            button2.Location = new Point(68, 431);
-            button2.Margin = new Padding(3, 2, 3, 2);
-            button2.Name = "button2";
-            button2.Size = new Size(82, 22);
-            button2.TabIndex = 2;
-            button2.Text = "button2";
-            button2.UseVisualStyleBackColor = true;
+            orders.Location = new Point(68, 431);
+            orders.Margin = new Padding(3, 2, 3, 2);
+            orders.Name = "orders";
+            orders.Size = new Size(82, 22);
+            orders.TabIndex = 2;
+            orders.Text = "Edit orders";
+            orders.UseVisualStyleBackColor = true;
+            orders.Click += orders_Click;
             // 
             // btn_change
             // 
@@ -283,7 +284,7 @@
             Controls.Add(btn_delete);
             Controls.Add(button4);
             Controls.Add(btn_change);
-            Controls.Add(button2);
+            Controls.Add(orders);
             Controls.Add(btn_add);
             Controls.Add(label1);
             Margin = new Padding(3, 2, 3, 2);
@@ -299,7 +300,7 @@
 
         private Label label1;
         private Button btn_add;
-        private Button button2;
+        private Button orders;
         private Button btn_change;
         private Button button4;
         private Button btn_delete;
