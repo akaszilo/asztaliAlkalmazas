@@ -34,6 +34,9 @@ namespace SellerPlatform
             {
                 try
                 {
+                    dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dataGridView1.MultiSelect = false;
+
                     connection.Open();
                     string query = "SELECT o.id, o.total, o.status, u.name " +
                                    "FROM orders o " +
@@ -54,7 +57,7 @@ namespace SellerPlatform
             }
         }
 
-        private void LoadOrderItems()
+        private void LoadOrderItems(string current)
         {
             using (MySqlConnection connection = new MySqlConnection(ConnectionString))
             {
@@ -62,8 +65,9 @@ namespace SellerPlatform
                 {
                     connection.Open();
                     string query = "SELECT i.id, i.quantity, i.price, " +
-                                   "FROM orders o " +
-                                   "JOIN users u ON u.id = o.user_id";
+                                   "FROM order_items " +
+                                   "JOIN orders o ON i.order_id = o.id " +
+                                   "WHERE o.id = ";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
@@ -82,7 +86,12 @@ namespace SellerPlatform
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            LoadOrderItems();
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.MultiSelect = false;
+
+            string current = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+            label1.Text = current;
+            LoadOrderItems(current);
         }
     }
 }
