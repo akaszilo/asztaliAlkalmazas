@@ -29,10 +29,9 @@ namespace SellerPlatform
         private void InitializeComponent()
         {
             dataGridView1 = new DataGridView();
-            label1 = new Label();
-            label2 = new Label();
             btn_Accept = new Button();
             btn_Decline = new Button();
+            btnGoBack = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -45,24 +44,6 @@ namespace SellerPlatform
             dataGridView1.TabIndex = 0;
             dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(39, 43);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 1;
-            label1.Text = "label1";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(101, 43);
-            label2.Name = "label2";
-            label2.Size = new Size(38, 15);
-            label2.TabIndex = 3;
-            label2.Text = "label2";
-            // 
             // btn_Accept
             // 
             btn_Accept.Location = new Point(39, 199);
@@ -71,6 +52,7 @@ namespace SellerPlatform
             btn_Accept.TabIndex = 4;
             btn_Accept.Text = "Accept";
             btn_Accept.UseVisualStyleBackColor = true;
+            btn_Accept.Click += btn_Accept_Click;
             // 
             // btn_Decline
             // 
@@ -80,30 +62,38 @@ namespace SellerPlatform
             btn_Decline.TabIndex = 5;
             btn_Decline.Text = "Decline";
             btn_Decline.UseVisualStyleBackColor = true;
+            btn_Decline.Click += btn_Decline_Click;
+            // 
+            // btnGoBack
+            // 
+            btnGoBack.Location = new Point(463, 368);
+            btnGoBack.Name = "btnGoBack";
+            btnGoBack.Size = new Size(296, 23);
+            btnGoBack.TabIndex = 6;
+            btnGoBack.Text = "Go back";
+            btnGoBack.UseVisualStyleBackColor = true;
+            btnGoBack.Click += btnGoBack_Click;
             // 
             // OrderForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnGoBack);
             Controls.Add(btn_Decline);
             Controls.Add(btn_Accept);
-            Controls.Add(label2);
-            Controls.Add(label1);
             Controls.Add(dataGridView1);
             Name = "OrderForm";
             Text = "OrderForm";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private DataGridView dataGridView1;
-        private Label label1;
-        private Label label2;
         private Button btn_Accept;
         private Button btn_Decline;
+        private Button btnGoBack;
     }
 }

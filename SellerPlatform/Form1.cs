@@ -176,7 +176,6 @@ namespace SellerPlatform
                 MessageBox.Show("Failed to retrieve Brand ID or Category ID. Product not updated.");
                 return;
             }
-            Console.WriteLine("valami");
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 try
@@ -222,7 +221,7 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "DELETE FROM products WHERE Name=@name";
+                    string query = "DELETE FROM products WHERE name=@name";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
