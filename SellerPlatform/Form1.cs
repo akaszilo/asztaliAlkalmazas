@@ -12,7 +12,7 @@ namespace SellerPlatform
             InitializeComponent();
 
 
-            string server = "localhost";
+            string server = "127.0.0.1";
             string database = "makeupstorenew";
             string user = "root";
             string password = "";
@@ -30,7 +30,7 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "SELECT p.id, p.name, p.price, p.image_link, p.description, p.howtouse, p.ingredients, b.name AS brand, c.name AS category " +
+                    string query = "SELECT p.id, p.name, p.price, p.image_link, p.description, b.name AS brand, c.name AS category, p.ingredients, p.howtouse " +
                                    "FROM products p " +
                                    "JOIN brands b ON p.brand_id = b.id " +
                                    "JOIN categories c ON p.category_Id = c.id";
@@ -119,7 +119,7 @@ namespace SellerPlatform
 
 
         // Method to add a product to the database
-        private void AddProduct(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string howToUsw, string ingredients)
+        private void AddProduct(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string ingredients, string howToUsw)
         {
             int brandId = GetBrandId(brandName);
             int categoryId = GetCategoryId(categoryName);
@@ -136,8 +136,8 @@ namespace SellerPlatform
                 try
                 {
                     connection.Open();
-                    string query = "INSERT INTO products (name, price, image_link, description, brand_Id, category_Id, howtouse, ingredients) " +
-                                   "VALUES (@name, @price, @imageLink, @description, @brandId, @categoryId, @howtouse, @ingredients)";
+                    string query = "INSERT INTO products (name, price, image_link, description, brand_Id, category_Id, ingredients, howtouse) " +
+                                   "VALUES (@name, @price, @imageLink, @description, @brandId, @categoryId, @ingredients, @howtouse)";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -147,8 +147,8 @@ namespace SellerPlatform
                         command.Parameters.AddWithValue("@description", description);
                         command.Parameters.AddWithValue("@brandId", brandId);
                         command.Parameters.AddWithValue("@categoryId", categoryId);
-                        command.Parameters.AddWithValue("@howtouse", howToUsw);
                         command.Parameters.AddWithValue("@ingredients", ingredients);
+                        command.Parameters.AddWithValue("@howtouse", howToUsw);
 
                         int rowsAffected = command.ExecuteNonQuery();
                         MessageBox.Show(rowsAffected > 0 ? "Product added successfully!" : "Failed to add product.");
@@ -165,24 +165,24 @@ namespace SellerPlatform
         }
 
 
-        private void UpdateProductByName(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string howtouse, string ingredients)
+        private void UpdateProductByName(string name, decimal price, string imageLink, string description, string brandName, string categoryName, string ingredients, string howtouse)
         {
             int brandId = GetBrandId(brandName);
             int categoryId = GetCategoryId(categoryName);
 
 
-            if (brandId == -1 || categoryId == -1)
+           if (brandId == -1 || categoryId == -1)
             {
                 MessageBox.Show("Failed to retrieve Brand ID or Category ID. Product not updated.");
                 return;
             }
-
+           Console.WriteLine("valami");
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 try
                 {
                     connection.Open();
-                    string query = "UPDATE products SET price=@price, image_link=@imageLink, description=@description,brand_id=@brandId, category_id=@categoryId howtouse=@howtouse, ingredients=@ingredients, WHERE name=@name";
+                    string query = "UPDATE products SET price=@price, image_link=@imageLink, description=@description, brand_id=@brandId, category_id=@categoryId, ingredients=@ingredients, howtouse=@howtouse WHERE name=@name";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -190,18 +190,25 @@ namespace SellerPlatform
                         command.Parameters.AddWithValue("@price", price);
                         command.Parameters.AddWithValue("@imageLink", imageLink);
                         command.Parameters.AddWithValue("@description", description);
-                        command.Parameters.AddWithValue("@ingredients", ingredients);
-                        command.Parameters.AddWithValue("@howtouse", howtouse);
                         command.Parameters.AddWithValue("@brandId", brandId);
                         command.Parameters.AddWithValue("@categoryId", categoryId);
+                        Console.WriteLine("valami");
+                        command.Parameters.AddWithValue("@ingredients", ingredients);
+                        command.Parameters.AddWithValue("@howtouse", howtouse);
 
                         int rowsAffected = command.ExecuteNonQuery();
+                        Console.WriteLine("valami");
                         MessageBox.Show(rowsAffected > 0 ? "Product updated successfully!" : "No product found with the specified name.");
                     }
                 }
                 catch (MySqlException ex)
                 {
-                    MessageBox.Show($"Error: {ex.Message}");
+                    
+                        
+                        
+                            MessageBox.Show($"MySQL error {ex.Number}: {ex.Message}");
+                           
+                    
                 }
             }
 
@@ -259,7 +266,7 @@ namespace SellerPlatform
                 return;
             }
 
-            AddProduct(name, price, imageLink, description, brandName, categoryName, howToUse, ingredients);
+            AddProduct(name, price, imageLink, description, brandName, categoryName, ingredients, howToUse);
         }
 
 
@@ -284,7 +291,8 @@ namespace SellerPlatform
                 return;
             }
 
-            UpdateProductByName(name, price, imageLink, description, brandName, howtouse, ingredients, categoryName);
+            UpdateProductByName(name, price, imageLink, description, brandName, categoryName, ingredients, howtouse);
+
         }
 
 
