@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Mail;
+using MongoDB.Driver.Core.Configuration;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SellerPlatform
 {
@@ -51,9 +54,18 @@ namespace SellerPlatform
                         adapter.Fill(dataTable);
                         dataGridView1.DataSource = dataTable;
                     }
-                    string id = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
-                    sendMail(id);
+
+
+                    if (dataGridView1.Rows.Count > 0)
+                    {
+                        // Opcionálisan automatikusan kijelölheted az első sort:
+                        dataGridView1.Rows[0].Selected = true;
+
+                        string id = dataGridView1.Rows[0].Cells[0].Value?.ToString();
+
+                    }
                 }
+
                 catch (MySqlException ex)
                 {
                     MessageBox.Show($"Error: {ex.Message}");
@@ -97,7 +109,7 @@ namespace SellerPlatform
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
 
-            public string current = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+            string current = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
             LoadOrderItems(current);
         }
 
@@ -107,7 +119,7 @@ namespace SellerPlatform
             LoadOrders();
         }
 
-        private void acceptOrder(string id)
+        private void acceptOrder(string id, DataTable data)
         {
             using (MySqlConnection connection = new MySqlConnection(ConnectionString))
             {
@@ -123,7 +135,7 @@ namespace SellerPlatform
                         int rowsAffected = command.ExecuteNonQuery();
                         MessageBox.Show(rowsAffected > 0 ? "Order updated successfully!" : "No product found with the specified name.");
                     }
-                    
+                    ChangeQuantities(id, data);
                 }
                 catch (MySqlException ex)
                 {
@@ -136,6 +148,38 @@ namespace SellerPlatform
                 }
             }
         }
+
+        private void ChangeQuantities(string id, DataTable quantity)
+        {
+            using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "UPDATE products SET sold_quantity = sold_quantity + @quantity, instock = instock - @quantity WHERE products.id = @id";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@quantity", quantity);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        MessageBox.Show(rowsAffected > 0 ? "Order updated successfully!" : "No product found with the specified name.");
+                    }
+
+                }
+                catch (MySqlException ex)
+                {
+
+
+
+                    MessageBox.Show($"MySQL error {ex.Number}: {ex.Message}");
+
+
+                }
+            }
+        }
+
         private void declineOrder(string id)
         {
             using (MySqlConnection connection = new MySqlConnection(ConnectionString))
@@ -164,57 +208,43 @@ namespace SellerPlatform
                 }
             }
         }
-        private void sendMail(string id)
+
+
+
+        private void btn_Accept_Click(object sender, EventArgs e)
         {
+            string id = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
 
             using (MySqlConnection connection = new MySqlConnection(ConnectionString))
             {
-
-                connection2.Open();
-                string query2 = "SELECT email FROM users WHERE id=@id ";
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                try
                 {
+                    connection.Open();
+                    string query = "SELECT quantity FROM order_items WHERE id = @id";
+
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
                     {
                         command.Parameters.AddWithValue("@id", id);
                         DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
+                        dataGridView1.DataSource = null;
+                        dataGridView1.DataSource = dataTable;
 
+                        
+                        acceptOrder(id, dataTable);
+                        LoadOrders();
                     }
-
                 }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}, {ex.Number}");
+                }
+
+
+
             }
-
-            string fromAddress = "felado@example.com";
-            string toAddress = dataTable;
-            string subject = "Teszt e-mail";
-            string body = "Ez egy teszt e-mail C#-ból.";
-
-            SmtpClient smtpClient = new SmtpClient("smtp.szerver.hu", 587) // SMTP szerver és port
-            {
-                Credentials = new NetworkCredential("felado@example.com", "jelszo"),
-                EnableSsl = true
-            };
-
-            MailMessage mail = new MailMessage(fromAddress, toAddress, subject, body);
-
-            try
-            {
-                smtpClient.Send(mail);
-                Console.WriteLine("E-mail sikeresen elküldve.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Hiba történt az e-mail küldésekor: " + ex.Message);
-            }
-        }
-        private void btn_Accept_Click(object sender, EventArgs e)
-        {
-            string id = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
-            acceptOrder(id);
-            LoadOrders();
-
         }
 
         private void btn_Decline_Click(object sender, EventArgs e)
