@@ -32,7 +32,6 @@ namespace SellerPlatform
             btn_add = new Button();
             orders = new Button();
             btn_change = new Button();
-            button4 = new Button();
             btn_delete = new Button();
             dataGridView1 = new DataGridView();
             label2 = new Label();
@@ -40,7 +39,6 @@ namespace SellerPlatform
             label4 = new Label();
             label5 = new Label();
             label6 = new Label();
-            label7 = new Label();
             txtImage = new TextBox();
             nudPrice = new NumericUpDown();
             txtDescription = new TextBox();
@@ -96,16 +94,6 @@ namespace SellerPlatform
             btn_change.Text = "Change product";
             btn_change.UseVisualStyleBackColor = true;
             btn_change.Click += btn_change_Click;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(216, 431);
-            button4.Margin = new Padding(3, 2, 3, 2);
-            button4.Name = "button4";
-            button4.Size = new Size(82, 22);
-            button4.TabIndex = 4;
-            button4.Text = "button4";
-            button4.UseVisualStyleBackColor = true;
             // 
             // btn_delete
             // 
@@ -171,15 +159,6 @@ namespace SellerPlatform
             label6.Size = new Size(38, 15);
             label6.TabIndex = 12;
             label6.Text = "Brand";
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(28, 8);
-            label7.Name = "label7";
-            label7.Size = new Size(38, 15);
-            label7.TabIndex = 13;
-            label7.Text = "label7";
             // 
             // txtImage
             // 
@@ -274,7 +253,6 @@ namespace SellerPlatform
             Controls.Add(txtDescription);
             Controls.Add(nudPrice);
             Controls.Add(txtImage);
-            Controls.Add(label7);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
@@ -282,7 +260,6 @@ namespace SellerPlatform
             Controls.Add(label2);
             Controls.Add(dataGridView1);
             Controls.Add(btn_delete);
-            Controls.Add(button4);
             Controls.Add(btn_change);
             Controls.Add(orders);
             Controls.Add(btn_add);
@@ -302,7 +279,6 @@ namespace SellerPlatform
         private Button btn_add;
         private Button orders;
         private Button btn_change;
-        private Button button4;
         private Button btn_delete;
         private DataGridView dataGridView1;
         private Label label2;
@@ -310,7 +286,6 @@ namespace SellerPlatform
         private Label label4;
         private Label label5;
         private Label label6;
-        private Label label7;
         private TextBox txtImage;
         private NumericUpDown nudPrice;
         private TextBox txtDescription;
