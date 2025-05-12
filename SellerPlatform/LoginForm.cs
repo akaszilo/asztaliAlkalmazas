@@ -50,7 +50,7 @@ namespace SellerPlatform
             }
         }
 
-        private bool ValidateLogin(string username, string password)
+        public bool ValidateLogin(string username, string password)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
